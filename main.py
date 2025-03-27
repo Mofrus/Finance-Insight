@@ -39,6 +39,29 @@ class StockData:
         market_close_time = datetime.now(market_tz).replace(hour=market_close_hour, minute=market_close_minute,second=0, microsecond=0)
         local_time = datetime.now(get_localzone())
         return market_open_time <= local_time <= market_close_time
+    
+    
 
-Stock = StockData('AAPL')
-print(Stock.isMarketOpen())
+class StockDataHandler:
+    @staticmethod
+    def compareDayHigh(stock1, stock2):
+        return stock1.getDayHigh() - stock2.getCurrentValue()
+
+    @staticmethod
+    def compareDayLow(stock1, stock2):
+        return stock1.getDayLow() - stock2.getCurrentValue()
+
+    @staticmethod
+    def compareMonthValue(stock1, stock2):
+        return stock1.getMonthValue() - stock2.getCurrentValue()
+
+    @staticmethod
+    def compareYearValue(stock1, stock2):
+        return stock1.getYearValue() - stock2.getCurrentValue()
+    
+    
+appleStock = StockData('AAPL')
+googleStock = StockData('GOOGL')
+
+print(StockDataHandler.compareDayHigh(appleStock, googleStock))
+
