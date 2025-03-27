@@ -65,6 +65,13 @@ class StockDataHandler:
         if result and 'quotes' in result and len(result['quotes']) > 0:
             return result['quotes'][0]['symbol']
         return None
+    
+    @staticmethod
+    def suggest_companies(partial_name):
+        result = search(partial_name)
+        if result and 'quotes' in result:
+            return [quote['shortname'] for quote in result['quotes']]
+        return []
 
 
 testStock = StockData(StockDataHandler.get_ticker_by_name('Apple'))
