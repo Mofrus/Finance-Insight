@@ -1,4 +1,4 @@
-# StockMarketProject
+# Finance-Insight
 
 ## Využití
 
