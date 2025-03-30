@@ -2,6 +2,7 @@ import yfinance as yf
 from datetime import datetime
 from tzlocal import *
 from yahooquery import *
+import dearpygui.dearpygui as dpg
 import pytz
 
 
@@ -74,7 +75,8 @@ class StockDataHandler:
         return []
 
 
-testStock = StockData(StockDataHandler.get_ticker_by_name('Apple'))
-google_stock = StockData('GOOGL')
 
-print(StockDataHandler.compare_day_high(testStock, google_stock))
+# testStock = StockData(StockDataHandler.get_ticker_by_name('Apple'))
+# google_stock = StockData('GOOGL')
+#
+# print(StockDataHandler.compare_day_high(testStock, google_stock))
