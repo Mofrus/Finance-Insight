@@ -26,7 +26,9 @@ def print_info_callback():
 def show_day_low_callback():
     dpg.delete_item("library_window", children_only=True)
     with dpg.group(parent="library_window"):
-        dpg.add_text("Show Day Low button clicked")
+        dpg.add_input_text(label="Stock")
+        dpg.add_radio_button(items=["High", "Low"], horizontal=True)
+        dpg.add_button(label="Print")
 
 dpg.create_context()
 
