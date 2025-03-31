@@ -40,20 +40,17 @@ class StockDataHandler:
         return None
 
     @staticmethod
-    def get_high_or_low(ticker, period="1d", high=True):
-        stock = yf.Ticker(ticker)
+    def get_high_or_low(ticker, period=None, high=None):
         if ticker is None:
             print("Error: Didn't find ticker.")
             return None
+        stock = yf.Ticker(ticker)
         value = stock.history(period=period)
         if high:
-            print(f"High: {value['High'].iloc[0]}")
-            return value['High'].iloc[0]
+            high_value = value['High'].iloc[-1]
+            print(f"High: {round(high_value, 2)}")
+            return round(high_value, 2)
         else:
-            print(f"Low: {value['Low'].iloc[0]}")
-            return value['Low'].iloc[0]
-
-
-StockDataHandler.search_stock("Apple")
-StockDataHandler.search_stock("OIJSDGDOJSDGFNO")
-StockDataHandler.get_high_or_low(StockDataHandler.search_stock("Apple"), period="1d", high=True)
+            low_value = value['Low'].iloc[-1]
+            print(f"Low: {round(low_value, 2)}")
+            return round(low_value, 2)
