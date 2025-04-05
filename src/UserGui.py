@@ -1,10 +1,4 @@
 import dearpygui.dearpygui as dpg
-import yfinance as yf
-from datetime import datetime
-from tzlocal import *
-from yahooquery import *
-import pytz
-
 from src.Stocks.StockDataHandler import StockDataHandler
 
 
@@ -30,20 +24,37 @@ def show_day_low_callback():
     dpg.delete_item("library_window", children_only=True)
     with dpg.group(parent="library_window"):
         dpg.add_input_text(label="Stock", tag="stock_input")
-        dpg.add_radio_button(items=["High", "Low"], horizontal=True)
-        dpg.add_button(label="Print", callback=lambda: print(StockDataHandler.get_high_or_low(StockDataHandler
-                                                             .search_stock(dpg.get_value("stock_input")), period="1d", high=dpg.get_value("High"))))
+        dpg.add_radio_button(items=["High", "Low"], horizontal=True, tag="hi_lw_rad_btn_input", default_value="High")
+        dpg.add_radio_button(items=["1d", "5d", "1mo", "6mo", "1y", "5y"], horizontal=True, tag="period_rad_btn_input", default_value="1d")
+        dpg.add_button(label="Print", callback=update_data)
+        dpg.add_text("", tag="loading_text")
+
+def update_loading_text(stock, high_or_low, period, data):
+    return f"{stock}'s {'High' if high_or_low == 'High' else 'Low'} for {period}: {data}$"
+
+def update_data():
+    dpg.set_value("loading_text", "Loading data...")
+    stock = dpg.get_value("stock_input")
+    high_or_low = dpg.get_value("hi_lw_rad_btn_input")
+    period = dpg.get_value("period_rad_btn_input")
+
+    ticker = StockDataHandler.search_stock(stock)
+    if ticker:
+        data = StockDataHandler.get_high_or_low(ticker, period=period, high=(high_or_low == "High"))
+        dpg.set_value("loading_text", update_loading_text(stock, high_or_low, period, data))
+    else:
+        dpg.set_value("loading_text", "Error: No result found.")
 
 dpg.create_context()
-with dpg.window(label="Navbar", tag="navbar", width=150, height=600, no_move=True, no_title_bar=True):
+with dpg.window(label="Navbar", tag="navbar", width=150, height=600, no_move=True, no_title_bar=True, no_resize=True):
     dpg.add_button(label="Compare Stocks", callback=compare_stocks_callback)
-    dpg.add_button(label="Show Day Low", callback=show_day_low_callback)
+    dpg.add_button(label="Price high or low", callback=show_day_low_callback)
     dpg.add_button(label="Print Info", callback=print_info_callback, tag="print_info_button", pos=(0, 550))
 
-with dpg.window(label="Library Window", tag="library_window", no_move=True, no_title_bar=True, pos=(150, 0)):
+with dpg.window(label="Library Window", tag="library_window", no_move=True, no_title_bar=True, pos=(150, 0), no_resize=True):
     dpg.add_text("This window will resize with the main window.")
 
-dpg.create_viewport(title='Main Window', width=600, height=600)
+dpg.create_viewport(title='Main Window', width=600, height=300, resizable=False)
 dpg.setup_dearpygui()
 dpg.show_viewport()
 

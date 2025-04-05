@@ -32,25 +32,20 @@ class StockDataHandler:
 
     @staticmethod
     def search_stock(company_name):
-        result = search(company_name, first_quote=True)
-        if result and 'symbol' in result:
-            print(f"Found ticker: {result['symbol']}")
-            return result['symbol']
+        try:
+            result = search(company_name, first_quote=True)
+            if result and 'symbol' in result:
+                return result['symbol']
+        except Exception as e:
+            print(f"Error: {e}")
         print("Error: No result found.")
         return None
 
     @staticmethod
     def get_high_or_low(ticker, period=None, high=None):
-        if ticker is None:
-            print("Error: Didn't find ticker.")
-            return None
         stock = yf.Ticker(ticker)
         value = stock.history(period=period)
         if high:
-            high_value = value['High'].iloc[-1]
-            print(f"High: {round(high_value, 2)}")
-            return round(high_value, 2)
+            return round(value['High'].max(), 2)
         else:
-            low_value = value['Low'].iloc[-1]
-            print(f"Low: {round(low_value, 2)}")
-            return round(low_value, 2)
+            return round(value['Low'].min(), 2)
