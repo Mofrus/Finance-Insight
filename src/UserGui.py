@@ -1,12 +1,14 @@
 import dearpygui.dearpygui as dpg
 from src.Stocks.StockDataHandler import StockDataHandler
+import logging
+import os
 
+logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s - %(message)s')
 
 def resize_callback(sender, app_data):
     width, height = dpg.get_viewport_client_width(), dpg.get_viewport_client_height()
     dpg.set_item_width("library_window", width - 150)  # Adjust for navbar width
     dpg.set_item_height("library_window", height)
-    dpg.set_item_pos("print_info_button", (0, height - 50))  # Adjust position of the button
 
 def compare_stocks_callback():
     dpg.delete_item("library_window", children_only=True)
@@ -16,9 +18,8 @@ def compare_stocks_callback():
         dpg.add_button(label="Compare")
 
 def print_info_callback():
-    dpg.delete_item("library_window", children_only=True)
-    with dpg.group(parent="library_window"):
-        dpg.add_text("Print Info button clicked")
+    os.startfile('app.log')
+
 
 def show_day_low_callback():
     dpg.delete_item("library_window", children_only=True)
@@ -41,15 +42,19 @@ def update_data():
     ticker = StockDataHandler.search_stock(stock)
     if ticker:
         data = StockDataHandler.get_high_or_low(ticker, period=period, high=(high_or_low == "High"))
-        dpg.set_value("loading_text", update_loading_text(stock, high_or_low, period, data))
+        result_text = update_loading_text(stock, high_or_low, period, data)
+        dpg.set_value("loading_text", result_text)
+        logging.info(result_text)
     else:
-        dpg.set_value("loading_text", "Error: No result found.")
+        error_text = "Error: No result found."
+        dpg.set_value("loading_text", error_text)
+        logging.error(error_text)
 
 dpg.create_context()
 with dpg.window(label="Navbar", tag="navbar", width=150, height=600, no_move=True, no_title_bar=True, no_resize=True):
     dpg.add_button(label="Compare Stocks", callback=compare_stocks_callback)
     dpg.add_button(label="Price high or low", callback=show_day_low_callback)
-    dpg.add_button(label="Print Info", callback=print_info_callback, tag="print_info_button", pos=(0, 550))
+    dpg.add_button(label="Open log", callback=print_info_callback)
 
 with dpg.window(label="Library Window", tag="library_window", no_move=True, no_title_bar=True, pos=(150, 0), no_resize=True):
     dpg.add_text("This window will resize with the main window.")
