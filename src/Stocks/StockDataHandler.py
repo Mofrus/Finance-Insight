@@ -58,16 +58,14 @@ class StockDataHandler:
     def get_basic_info(stock):
         try:
             ticker = StockDataHandler.search_stock(stock)
-            print(ticker)
             stock = yf.Ticker(ticker)
-            print(stock)
             info = stock.info
 
             revenue = info.get('totalRevenue', 'N/A')
             debt = info.get('totalDebt', 'N/A')
             profit_margin = info.get('profitMargins', 'N/A')
 
-            result = f"Revenue: {revenue}\nDebt: {debt}\nProfit Margin: {profit_margin}"
+            result = f"Revenue: {revenue}$\nDebt: {debt}$\nProfit Margin: {profit_margin * 100}%"
             logging.info(result)
             return result
         except Exception as e:
