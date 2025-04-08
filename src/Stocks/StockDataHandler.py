@@ -52,3 +52,24 @@ class StockDataHandler:
             if ticker:
                 tickers.append(ticker)
         return tickers
+    
+
+    @staticmethod
+    def get_basic_info(stock):
+        try:
+            ticker = StockDataHandler.search_stock(stock)
+            print(ticker)
+            stock = yf.Ticker(ticker)
+            print(stock)
+            info = stock.info
+
+            revenue = info.get('totalRevenue', 'N/A')
+            debt = info.get('totalDebt', 'N/A')
+            profit_margin = info.get('profitMargins', 'N/A')
+
+            result = f"Revenue: {revenue}\nDebt: {debt}\nProfit Margin: {profit_margin}"
+            logging.info(result)
+            return result
+        except Exception as e:
+            logging.error(f"Error fetching basic info: {e}")
+            return f"Error: {e}"

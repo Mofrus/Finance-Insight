@@ -11,6 +11,20 @@ def resize_callback(sender, app_data):
 def print_info_callback():
     os.startfile('app.log')
 
+def show_basic_info_callback():
+    dpg.delete_item("library_window", children_only=True)
+    with dpg.group(parent="library_window"):
+        dpg.add_input_text(label="Company or Ticker", tag="info_input")
+        dpg.add_text("Enter a company name or ticker symbol (e.g., AAPL or Apple).")
+        dpg.add_button(label="Get Info", callback=display_basic_info)
+        dpg.add_text("", tag="info_output")
+
+def display_basic_info():
+    dpg.set_value("info_output", "Loading data...")
+    input_value = dpg.get_value("info_input")
+    result = StockDataHandler.get_basic_info(input_value)
+    dpg.set_value("info_output", result)
+
 def show_day_low_callback():
     dpg.delete_item("library_window", children_only=True)
     with dpg.group(parent="library_window"):
@@ -47,8 +61,10 @@ dpg.create_context()
 with dpg.window(label="Navbar", tag="navbar", width=150, height=600, no_move=True, no_title_bar=True, no_resize=True):
     dpg.add_button(label="Price high or low", callback=show_day_low_callback)
     dpg.add_button(label="Find Ticker", callback=find_ticker_callback)
+    dpg.add_button(label="Basic Info", callback=show_basic_info_callback)
     dpg.add_button(label="Open log", callback=print_info_callback)
-
+    dpg.add_button(label="Exit", callback=lambda: dpg.stop_dearpygui())
+    
 with dpg.window(label="Library Window", tag="library_window", no_move=True, no_title_bar=True, pos=(150, 0), no_resize=True):
     pass
 
