@@ -1,0 +1,8 @@
+dearpygui
+yfinance
+tzlocal
+yahooquery
+pytz
+pandas
+numpy
+plotly 

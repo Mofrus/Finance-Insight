@@ -1,7 +1,9 @@
 # src/UserGui.py
 import dearpygui.dearpygui as dpg
 from src.Stocks.StockDataHandler import StockDataHandler
+from src.Stocks.TechnicalAnalysis import TechnicalAnalysis
 import os
+import webbrowser
 
 def resize_callback(sender, app_data):
     width, height = dpg.get_viewport_client_width(), dpg.get_viewport_client_height()
@@ -57,11 +59,47 @@ def update_data():
     result_text = StockDataHandler.update_data(stock, high_or_low, period)
     dpg.set_value("loading_text", result_text)
 
+def show_chart_callback():
+    dpg.delete_item("library_window", children_only=True)
+    with dpg.group(parent="library_window"):
+        dpg.add_input_text(label="Stock Ticker", tag="chart_ticker_input")
+        dpg.add_text("Enter the stock symbol (e.g., AAPL for Apple).")
+        dpg.add_radio_button(items=["1d", "5d", "1mo", "3mo", "6mo", "1y", "5y"], 
+                           horizontal=True, tag="chart_period_input", default_value="1mo")
+        with dpg.group(horizontal=True):
+            dpg.add_checkbox(label="SMA20", tag="sma20_check", default_value=True)
+            dpg.add_checkbox(label="SMA50", tag="sma50_check", default_value=True)
+            dpg.add_checkbox(label="RSI", tag="rsi_check", default_value=True)
+        dpg.add_button(label="Generate Chart", callback=generate_chart)
+        dpg.add_text("", tag="chart_status")
+
+def generate_chart():
+    dpg.set_value("chart_status", "Generating chart...")
+    ticker = dpg.get_value("chart_ticker_input")
+    period = dpg.get_value("chart_period_input")
+    
+    # Get selected indicators
+    indicators = []
+    if dpg.get_value("sma20_check"):
+        indicators.append("SMA20")
+    if dpg.get_value("sma50_check"):
+        indicators.append("SMA50")
+    if dpg.get_value("rsi_check"):
+        indicators.append("RSI")
+    
+    chart_path = TechnicalAnalysis.create_chart(ticker, period, indicators)
+    if chart_path.startswith("Error"):
+        dpg.set_value("chart_status", chart_path)
+    else:
+        dpg.set_value("chart_status", "Chart generated successfully!")
+        webbrowser.open('file://' + os.path.realpath(chart_path))
+
 dpg.create_context()
 with dpg.window(label="Navbar", tag="navbar", width=150, height=600, no_move=True, no_title_bar=True, no_resize=True):
     dpg.add_button(label="Price high or low", callback=show_day_low_callback)
     dpg.add_button(label="Find Ticker", callback=find_ticker_callback)
     dpg.add_button(label="Basic Info", callback=show_basic_info_callback)
+    dpg.add_button(label="Technical Chart", callback=show_chart_callback)
     dpg.add_button(label="Open log", callback=print_info_callback)
     dpg.add_button(label="Exit", callback=lambda: dpg.stop_dearpygui())
     
