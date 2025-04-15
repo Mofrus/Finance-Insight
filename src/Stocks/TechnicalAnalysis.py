@@ -14,12 +14,12 @@ class TechnicalAnalysis:
     
     @staticmethod
     def calculate_ema(data, window):
-        """Calculate Exponential Moving Average"""
+        """Calculate Moving Average"""
         return data['Close'].ewm(span=window, adjust=False).mean()
     
     @staticmethod
     def calculate_rsi(data, periods=14):
-        """Calculate Relative Strength Index"""
+        """Relative Strength Index"""
         delta = data['Close'].diff()
         gain = (delta.where(delta > 0, 0)).rolling(window=periods).mean()
         loss = (-delta.where(delta < 0, 0)).rolling(window=periods).mean()
@@ -28,31 +28,25 @@ class TechnicalAnalysis:
     
     @staticmethod
     def create_chart(ticker, period='1mo', indicators=None):
-        """Create an interactive chart with technical indicators"""
+        """Create chart"""
         try:
-            # Ensure ticker is not None or empty
             if not ticker or ticker.strip() == "":
                 return "Error: Please enter a valid ticker symbol"
                 
-            # Clean up ticker symbol
             ticker = ticker.strip().upper()
             
-            # Create charts directory if it doesn't exist
             os.makedirs('charts', exist_ok=True)
             
-            # Get stock data
             stock = yf.Ticker(ticker)
             data = stock.history(period=period)
             
             if data.empty:
                 return f"Error: No data available for ticker {ticker}"
             
-            # Create figure with secondary y-axis
             fig = make_subplots(rows=2, cols=1, shared_xaxes=True, 
                               vertical_spacing=0.03, 
                               row_heights=[0.7, 0.3])
             
-            # Add candlestick
             fig.add_trace(go.Candlestick(x=data.index,
                                         open=data['Open'],
                                         high=data['High'],
@@ -61,7 +55,6 @@ class TechnicalAnalysis:
                                         name='OHLC'),
                          row=1, col=1)
             
-            # Add indicators if specified
             if indicators:
                 if 'SMA20' in indicators:
                     sma20 = TechnicalAnalysis.calculate_sma(data, 20)
@@ -80,11 +73,9 @@ class TechnicalAnalysis:
                     fig.add_trace(go.Scatter(x=data.index, y=rsi,
                                            name='RSI', line=dict(color='purple')),
                                 row=2, col=1)
-                    # Add RSI reference lines
                     fig.add_hline(y=70, line_dash="dash", line_color="red", row=2, col=1)
                     fig.add_hline(y=30, line_dash="dash", line_color="green", row=2, col=1)
             
-            # Update layout
             fig.update_layout(
                 title=f'{ticker} Stock Price',
                 yaxis_title='Stock Price',
@@ -92,7 +83,6 @@ class TechnicalAnalysis:
                 xaxis_rangeslider_visible=False
             )
             
-            # Save the chart as HTML
             chart_path = os.path.abspath(f'charts/{ticker}_chart.html')
             fig.write_html(chart_path)
             logging.info(f"Chart created for {ticker} at {chart_path}")
