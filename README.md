@@ -22,22 +22,11 @@ Moderní desktopová aplikace pro analýzu akciového trhu s daty v reálném č
 
 1. Klonování repozitáře:
    ```bash
-   git clone https://github.com/yourusername/StockMarketProject.git
-   cd StockMarketProject
+   git clone https://github.com/Mofrus/Finance-Insight.git
+   cd Finance-Insight
    ```
 
-2. Vytvoření a aktivace virtuálního prostředí (doporučeno):
-   ```bash
-   # Windows
-   python -m venv .venv
-   .venv\Scripts\activate
-
-   # Linux/macOS
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
-
-3. Instalace závislostí:
+2. Instalace závislostí:
    ```bash
    pip install -r requirements.txt
    ```
