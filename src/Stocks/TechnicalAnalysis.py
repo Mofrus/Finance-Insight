@@ -4,6 +4,7 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import logging
+import os
 
 class TechnicalAnalysis:
     @staticmethod
@@ -29,11 +30,22 @@ class TechnicalAnalysis:
     def create_chart(ticker, period='1mo', indicators=None):
         """Create an interactive chart with technical indicators"""
         try:
+            # Ensure ticker is not None or empty
+            if not ticker or ticker.strip() == "":
+                return "Error: Please enter a valid ticker symbol"
+                
+            # Clean up ticker symbol
+            ticker = ticker.strip().upper()
+            
+            # Create charts directory if it doesn't exist
+            os.makedirs('charts', exist_ok=True)
+            
+            # Get stock data
             stock = yf.Ticker(ticker)
             data = stock.history(period=period)
             
             if data.empty:
-                return "No data available for this ticker"
+                return f"Error: No data available for ticker {ticker}"
             
             # Create figure with secondary y-axis
             fig = make_subplots(rows=2, cols=1, shared_xaxes=True, 
@@ -81,9 +93,9 @@ class TechnicalAnalysis:
             )
             
             # Save the chart as HTML
-            chart_path = f'charts/{ticker}_chart.html'
+            chart_path = os.path.abspath(f'charts/{ticker}_chart.html')
             fig.write_html(chart_path)
-            logging.info(f"Chart created for {ticker}")
+            logging.info(f"Chart created for {ticker} at {chart_path}")
             return chart_path
             
         except Exception as e:

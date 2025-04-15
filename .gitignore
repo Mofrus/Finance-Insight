@@ -192,3 +192,15 @@ ENV/
 
 # Logs
 *.log
+
+# Ignore charts directory
+charts/
+charts/*
+
+# Ignore log files
+app.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
