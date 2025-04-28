@@ -5,4 +5,7 @@ yahooquery
 pytz
 pandas
 numpy
-plotly 
+plotly
+pytest
+pytest-mock
+flake8 
