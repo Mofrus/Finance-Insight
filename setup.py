@@ -14,7 +14,8 @@ setup(
         "numpy",
         "plotly",
         "pytest",
-        "pytest-mock"
+        "pytest-mock",
+        "flake8"
     ],
     python_requires=">=3.8",
 ) 

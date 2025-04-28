@@ -22,12 +22,11 @@ class StockDataHandler:
 
     @staticmethod
     def get_high_or_low(ticker, period=None, high=None):
-        stock = yf.Ticker(ticker)
+        stock = Ticker(ticker)
         value = stock.history(period=period)
         if high:
             return round(value['High'].max(), 2)
-        else:
-            return round(value['Low'].min(), 2)
+        return round(value['Low'].min(), 2)
 
     @staticmethod
     def update_loading_text(stock, high_or_low, period, data):
@@ -44,16 +43,10 @@ class StockDataHandler:
 
             if high_or_low == "High":
                 max_price = history['high'].max()
-                return (
-                    f"{stock} highest price in {period}: "
-                    f"${max_price:.2f}"
-                )
+                return f"{stock} highest price in {period}: ${max_price:.2f}"
             else:
                 min_price = history['low'].min()
-                return (
-                    f"{stock} lowest price in {period}: "
-                    f"${min_price:.2f}"
-                )
+                return f"{stock} lowest price in {period}: ${min_price:.2f}"
         except Exception as e:
             logging.error(f"Error updating data: {str(e)}")
             return f"Error getting data for {stock}"
